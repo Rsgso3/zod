@@ -1,0 +1,31 @@
+name: Zodgame Daily Checkin
+
+on:
+  schedule:
+    - cron: '1 16 * * *'  # 每天北京时间 0:01 执行 (UTC+8)
+  workflow_dispatch:      # 允许手动触发
+
+jobs:
+  checkin:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.x'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install requests
+
+    - name: Run checkin script
+      env:
+        ZODGAME_COOKIE: ${{ secrets.ZODGAME_COOKIE }}
+        ZODGAME_FORMHASH: ${{ secrets.ZODGAME_FORMHASH }}
+        GOTIFY_URL: ${{ secrets.GOTIFY_URL }}
+        GOTIFY_TOKEN: ${{ secrets.GOTIFY_TOKEN }}
+      run: python zodgame.py
